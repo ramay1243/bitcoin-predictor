@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 Bitcoin Predictor PRO</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка -->
+        <div class="header">
+            <h1><i class="fas fa-bitcoin"></i> BITCOIN PREDICTOR PRO</h1>
+            <div class="user-info">
+                <span id="username">Трейдер</span>
+                <div class="stats">
+                    <span>Рейтинг: <span id="rating">1000</span></span>
+                    <span>Уровень: <span id="level">1</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной экран -->
+        <div class="main-screen">
+            <!-- График и цена -->
+            <div class="price-section">
+                <div class="price-display">
+                    <div class="current-price" id="current-price">$--,--</div>
+                    <div class="price-change" id="price-change">
+                        <span id="change-amount">+0.00%</span>
+                        <span id="change-time">за 5 мин</span>
+                    </div>
+                </div>
+                
+                <div class="price-history">
+                    <div class="history-item">
+                        <span>Начало раунда:</span>
+                        <span id="round-start-price">$--,--</span>
+                    </div>
+                    <div class="history-item">
+                        <span>Ваша ставка:</span>
+                        <span id="user-bet-amount">0 Stars</span>
+                    </div>
+                    <div class="history-item">
+                        <span>Призовой фонд:</span>
+                        <span id="prize-pool">0 Stars</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Таймер -->
+            <div class="timer-section">
+                <div class="timer-display">
+                    <div class="timer-label">Следующий раунд через:</div>
+                    <div class="timer" id="timer">05:00</div>
+                    <div class="round-info">Раунд #<span id="round-number">1</span></div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <!-- Ставки -->
+            <div class="bet-section">
+                <div class="bet-direction">
+                    <button class="direction-btn up-btn" id="bet-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>📈 ВЫШЕ</span>
+                        <div class="odds" id="odds-up">1.8x</div>
+                    </button>
+                    <button class="direction-btn down-btn" id="bet-down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>📉 НИЖЕ</span>
+                        <div class="odds" id="odds-down">1.9x</div>
+                    </button>
+                </div>
+
+                <div class="bet-amount">
+                    <div class="amount-title">Размер ставки:</div>
+                    <div class="amount-buttons">
+                        <button class="amount-btn" data-amount="10">10</button>
+                        <button class="amount-btn" data-amount="50">50</button>
+                        <button class="amount-btn active" data-amount="100">100</button>
+                        <button class="amount-btn" data-amount="500">500</button>
+                        <button class="amount-btn" data-amount="1000">1000</button>
+                    </div>
+                    <div class="amount-slider">
+                        <input type="range" id="bet-slider" min="10" max="1000" value="100" step="10">
+                        <div class="slider-values">
+                            <span>10⭐</span>
+                            <span id="current-slider-value">100⭐</span>
+                            <span>1000⭐</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bet-info">
+                    <div class="info-item">
+                        <i class="fas fa-users"></i>
+                        <span>Игроков в раунде: <span id="players-count">0</span></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-percentage"></i>
+                        <span>Комиссия: <span id="commission-rate">10%</span></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-trophy"></i>
+                        <span>Ваш выигрыш: <span id="potential-win">0⭐</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Баланс и кнопки -->
+            <div class="action-section">
+                <div class="balance-display">
+                    <div class="balance-label">Ваш баланс:</div>
+                    <div class="balance-amount" id="balance">1000⭐</div>
+                    <button class="buy-stars-btn" id="buy-stars">
+                        <i class="fas fa-plus"></i> Купить Stars
+                    </button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn secondary" id="history-btn">
+                        <i class="fas fa-history"></i> История
+                    </button>
+                    <button class="action-btn secondary" id="leaders-btn">
+                        <i class="fas fa-crown"></i> Топ игроков
+                    </button>
+                    <button class="action-btn secondary" id="help-btn">
+                        <i class="fas fa-question-circle"></i> Помощь
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Уведомления -->
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <!-- Модальные окна -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-history"></i> История ставок</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="history-list" id="history-list">
+                    <!-- История загрузится через JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="leaders-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-crown"></i> Топ игроков</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="leaders-list" id="leaders-list">
+                    <!-- Топ загрузится через JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="buy-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-shopping-cart"></i> Купить Telegram Stars</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="stars-packages">
+                    <div class="package" data-stars="100">
+                        <div class="package-header">
+                            <i class="fas fa-star"></i>
+                            <h3>100 Stars</h3>
+                        </div>
+                        <div class="package-price">$1.00</div>
+                        <div class="package-bonus">Бонус: 0%</div>
+                        <button class="buy-package-btn">Купить</button>
+                    </div>
+                    <div class="package popular" data-stars="500">
+                        <div class="package-header">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            <h3>500 Stars</h3>
+                            <span class="popular-badge">ПОПУЛЯРНОЕ</span>
+                        </div>
+                        <div class="package-price">$4.50</div>
+                        <div class="package-bonus">Бонус: 10%</div>
+                        <button class="buy-package-btn">Купить</button>
+                    </div>
+                    <div class="package" data-stars="1000">
+                        <div class="package-header">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            <h3>1000 Stars</h3>
+                        </div>
+                        <div class="package-price">$8.00</div>
+                        <div class="package-bonus">Бонус: 20%</div>
+                        <button class="buy-package-btn">Купить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-modal" class="modal">
+        <div class="modal-content result-modal">
+            <div class="result-header" id="result-title">
+                <i class="fas fa-trophy"></i> Результат раунда
+            </div>
+            <div class="result-body">
+                <div class="result-price">
+                    <div class="price-start">
+                        <span>Начало:</span>
+                        <span id="result-start-price">$--,--</span>
+                    </div>
+                    <div class="price-arrow">→</div>
+                    <div class="price-end">
+                        <span>Конец:</span>
+                        <span id="result-end-price">$--,--</span>
+                    </div>
+                </div>
+                <div class="result-change" id="result-change">
+                    <span>Изменение: +0.00%</span>
+                </div>
+                <div class="user-result" id="user-result">
+                    Ваша ставка: <span class="bet-amount">0 Stars</span> на <span class="bet-direction">ВЫШЕ</span>
+                </div>
+                <div class="result-message" id="result-message">
+                    Ожидание результата...
+                </div>
+                <div class="result-prize" id="result-prize">
+                    Выигрыш: <span class="prize-amount">0 Stars</span>
+                </div>
+                <button class="result-ok-btn" id="result-ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
